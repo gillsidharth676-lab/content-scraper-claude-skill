@@ -1,0 +1,30 @@
+# Build / cache
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+.venv/
+venv/
+
+# Local model + audio files
+*.bin
+*.wav
+*.mp3
+*.mp4
+*.m4a
+
+# Runtime data — user-specific, not for source control
+~/content-scraper/
+*_ai-niche-trends.csv
+*_ai-niche-trends.json
+*_validation.json
+*_topic-clusters.json
+ig.json
+yt.json
+x.json
+
+# Secrets
+.env
+.env.*
+*.token
+auth.json

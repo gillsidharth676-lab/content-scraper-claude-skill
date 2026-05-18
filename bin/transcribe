@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+# Usage: transcribe <url> [-m model] [-l language]
+#
+# Downloads a video from any yt-dlp-supported platform (YouTube, Instagram,
+# TikTok, X/Twitter, etc.), extracts mono 16kHz WAV, and runs whisper.cpp.
+# Outputs the plain-text transcript to stdout. Logs go to stderr.
+#
+# Examples:
+#   transcribe https://www.youtube.com/shorts/Grc8n0suMGU
+#   transcribe https://www.instagram.com/p/DYNIp-eNPQk/ -l ru
+#   transcribe https://x.com/elonmusk/status/123 -m small
+
+set -euo pipefail
+
+URL=""
+MODEL="base"
+LANG="auto"
+BROWSER=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -m|--model)    MODEL="$2"; shift 2 ;;
+    -l|--language) LANG="$2";  shift 2 ;;
+    -b|--cookies-from-browser) BROWSER="$2"; shift 2 ;;
+    -*) echo "unknown flag: $1" >&2; exit 2 ;;
+    *)  URL="$1"; shift ;;
+  esac
+done
+
+if [[ -z "$URL" ]]; then
+  echo "usage: transcribe <url> [-m model] [-l lang] [-b browser]" >&2
+  exit 2
+fi
+
+# Auto-use Chrome cookies for Instagram (logged-in content)
+if [[ -z "$BROWSER" && "$URL" == *"instagram.com"* ]]; then
+  BROWSER="chrome"
+fi
+
+MODEL_PATH="$HOME/.local/whisper.cpp/models/ggml-${MODEL}.bin"
+if [[ ! -f "$MODEL_PATH" ]]; then
+  echo "model '$MODEL' not found at $MODEL_PATH" >&2
+  echo "download with: cd ~/.local/whisper.cpp && bash ./models/download-ggml-model.sh $MODEL" >&2
+  exit 3
+fi
+
+TMPDIR=$(mktemp -d)
+trap 'rm -rf "$TMPDIR"' EXIT
+
+echo "→ downloading audio..." >&2
+COOKIE_FLAG=()
+if [[ -n "$BROWSER" ]]; then
+  echo "→ using cookies from: $BROWSER" >&2
+  yt-dlp -q --no-warnings -f "bestaudio/best" -x --audio-format wav \
+    --postprocessor-args "-ar 16000 -ac 1" \
+    --cookies-from-browser "$BROWSER" \
+    -o "$TMPDIR/audio.%(ext)s" "$URL" >&2
+else
+  yt-dlp -q --no-warnings -f "bestaudio/best" -x --audio-format wav \
+    --postprocessor-args "-ar 16000 -ac 1" \
+    -o "$TMPDIR/audio.%(ext)s" "$URL" >&2
+fi
+
+AUDIO=$(ls "$TMPDIR"/audio.* 2>/dev/null | head -1)
+if [[ -z "$AUDIO" ]]; then
+  echo "audio download failed" >&2
+  exit 4
+fi
+
+echo "→ transcribing with whisper.cpp (model=$MODEL, lang=$LANG)..." >&2
+if [[ "$LANG" != "auto" ]]; then
+  whisper-cli -m "$MODEL_PATH" -f "$AUDIO" \
+    --output-txt --output-file "$TMPDIR/out" \
+    -l "$LANG" --no-prints 2>/dev/null
+else
+  whisper-cli -m "$MODEL_PATH" -f "$AUDIO" \
+    --output-txt --output-file "$TMPDIR/out" \
+    --no-prints 2>/dev/null
+fi
+
+cat "$TMPDIR/out.txt"
