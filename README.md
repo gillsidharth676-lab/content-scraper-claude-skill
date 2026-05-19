@@ -5,6 +5,7 @@ Two **Claude Code skills** that find what's actually going viral in your niche t
 - **`content-scraper`** — scrapes Instagram Reels + YouTube Shorts (last 7 days) for AI tools / Claude Code / automation content, transcribes locally with Whisper, returns a ranked CSV.
 - **`content-validator`** — re-checks the scrape: strict niche filter, hook quality scoring, bot-view detection, transcript completeness. Outputs a validation report.
 - **`my-voice-writer`** — writes short-form video scripts in a specific creator's voice using a fixed `[BEAT 1] → [BEAT 2] → [BEAT 3] → [CTA]` structure. Calibrated to one user out of the box — see the fork notice inside its `SKILL.md` to retune for your own voice.
+- **`hook-agent`** — writes the 1-3 second opener that `my-voice-writer` deliberately skips. Always outputs 3 hook variants `[HOOK A/B/C]` across different archetypes (number-drop, confession, meta-acknowledgment, anti-claim, list-twist, quiet declarative), one of which is in dry-Hinglish.
 
 Built end-to-end with Claude Code in a single session. Costs ~$1/week in Apify credits. Local Whisper is free.
 
@@ -14,6 +15,7 @@ Built end-to-end with Claude Code in a single session. Costs ~$1/week in Apify c
 ~/.claude/skills/content-scraper/      ← scrape + rank
 ~/.claude/skills/content-validator/    ← QA the scrape
 ~/.claude/skills/my-voice-writer/      ← voice-locked script writer (fork & retune)
+~/.claude/skills/hook-agent/           ← writes the 1-3 sec opener, 3 variants
 ~/.local/bin/transcribe                ← local Whisper wrapper
 ```
 
@@ -72,6 +74,7 @@ Free Apify tier gives $5/mo in credits — enough for a few full weekly runs.
 | `content-validator/SKILL.md` | Validation skill instructions |
 | `content-validator/validate.py` | Validation logic: strict niche, hook scores, bot detection, transcript completeness |
 | `my-voice-writer/SKILL.md` | Voice-locked script writer — fixed beat structure, comment-trigger CTA, dry-Hinglish layer. **Fork & retune for your own voice.** |
+| `hook-agent/SKILL.md` | 1-3 sec hook writer — 3 variants per call, archetype-tagged, mixed English/Hinglish. Pairs with `my-voice-writer`. |
 | `bin/transcribe` | yt-dlp → 16kHz WAV → whisper.cpp wrapper |
 | `setup.md` | Full install guide (macOS) |
 | `setup-wsl.md` | Windows guide (via WSL2) |
