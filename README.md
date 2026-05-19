@@ -37,7 +37,7 @@ See [`setup.md`](setup.md) for the full guide. Five-minute version:
 
 ```bash
 # 1. Drop the skills into Claude Code's skills dir
-cp -R content-scraper content-validator ~/.claude/skills/
+cp -R content-scraper content-validator my-voice-writer hook-agent hook-generator ai-visuals-writer dm-responder ~/.claude/skills/
 
 # 2. Install Apify CLI + log in
 npm install -g apify-cli
@@ -48,6 +48,22 @@ bash setup.sh   # see setup.md if you want to do it manually
 ```
 
 Then in any new Claude Code session: *"run content-scraper"*.
+
+## One-command pipeline (`make`)
+
+The repo ships a Makefile that chains all 7 skills end-to-end:
+
+```bash
+make help                                          # list targets
+make doctor                                        # diagnose env
+make reel                                          # full pre-shoot pipeline (skills 1-6)
+make reel TOPIC="text-photo vs text-video memes"   # override topic
+make dms HANDLES=commenters.txt                    # post-shoot DMs (skill 7)
+```
+
+`make reel` runs: **scrape → validate → cluster → hooks → script → shotlist**, and drops everything into `~/content-scraper/YYYY-MM-DD-reel-package/`. Wall time ~10 min, Apify cost ~$0.50/run.
+
+For LLM-driven targets (`hook`, `script`, `shotlist`, `dms`) the Makefile auto-uses `claude -p` (Claude Code's headless mode) if `claude` is on PATH; otherwise it prints copy-paste instructions to run inside a Claude Code session.
 
 ## Sample output
 
@@ -85,6 +101,9 @@ Free Apify tier gives $5/mo in credits — enough for a few full weekly runs.
 | `ai-visuals-writer/SKILL.md` | Script → AI-generation shotlist. Tool-agnostic prompts (Sora 2 / Veo 3 / Runway / Pika / Kling), voice-over guidance, music, budget. |
 | `dm-responder/SKILL.md` | Personalized IG DM drafter for "Comment X" commenters. One specific reference per opener, 3-message sequence, banned-phrase enforcement. |
 | `dm-responder/fetch_commenters.py` | Batch profile-fetch helper via Apify. Pulls bio, recent posts, followers, language signal, niche tags. Outputs JSON. |
+| `Makefile` | One-command orchestrator. `make reel` chains skills 1–6; `make dms HANDLES=...` runs skill 7. |
+| `bin/run-scrape.sh` | Apify IG + YT scrape orchestrator (parallel REST calls, polling, dataset fetch, process). Called by `make scrape`. |
+| `bin/cluster-topics.py` | Topic clustering of latest trends.json by view performance. Called by `make cluster`. |
 | `bin/transcribe` | yt-dlp → 16kHz WAV → whisper.cpp wrapper |
 | `setup.md` | Full install guide (macOS) |
 | `setup-wsl.md` | Windows guide (via WSL2) |
