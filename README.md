@@ -6,6 +6,7 @@ Two **Claude Code skills** that find what's actually going viral in your niche t
 - **`content-validator`** — re-checks the scrape: strict niche filter, hook quality scoring, bot-view detection, transcript completeness. Outputs a validation report.
 - **`my-voice-writer`** — writes short-form video scripts in a specific creator's voice using a fixed `[BEAT 1] → [BEAT 2] → [BEAT 3] → [CTA]` structure. Calibrated to one user out of the box — see the fork notice inside its `SKILL.md` to retune for your own voice.
 - **`hook-agent`** — writes the 1-3 second opener that `my-voice-writer` deliberately skips. Always outputs 3 hook variants `[HOOK A/B/C]` across different archetypes (number-drop, confession, meta-acknowledgment, anti-claim, list-twist, quiet declarative), one of which is in dry-Hinglish.
+- **`ai-visuals-writer`** — converts a finished script + hook into a complete AI-generation shotlist (Sora 2 / Veo 3 / Runway Gen-4 / Pika / Kling), with voice-over + music guidance and budget estimate. Replaces raw recordings for B-roll while keeping UI screens as real recordings.
 - **`hook-generator`** — more opinionated cousin of `hook-agent`: always 5 hooks, all Hinglish, fixed 5-pattern slate (aspirational, pain-point, exclusivity, time-or-money claim, curiosity-gap), with per-hook confidence scores 0-10 grounded in the latest scrape data.
 
 Built end-to-end with Claude Code in a single session. Costs ~$1/week in Apify credits. Local Whisper is free.
@@ -18,6 +19,7 @@ Built end-to-end with Claude Code in a single session. Costs ~$1/week in Apify c
 ~/.claude/skills/my-voice-writer/      ← voice-locked script writer (fork & retune)
 ~/.claude/skills/hook-agent/           ← writes the 1-3 sec opener, 3 variants
 ~/.claude/skills/hook-generator/       ← 5 hooks across 5 fixed patterns, scored
+~/.claude/skills/ai-visuals-writer/    ← AI-generation shotlist + VO + music + budget
 ~/.local/bin/transcribe                ← local Whisper wrapper
 ```
 
@@ -78,6 +80,7 @@ Free Apify tier gives $5/mo in credits — enough for a few full weekly runs.
 | `my-voice-writer/SKILL.md` | Voice-locked script writer — fixed beat structure, comment-trigger CTA, dry-Hinglish layer. **Fork & retune for your own voice.** |
 | `hook-agent/SKILL.md` | 1-3 sec hook writer — 3 variants per call, archetype-tagged, mixed English/Hinglish. Pairs with `my-voice-writer`. |
 | `hook-generator/SKILL.md` | 5-hook generator with fixed pattern slate (aspirational / pain / exclusivity / money / curiosity) + per-hook confidence scoring. All Hinglish. |
+| `ai-visuals-writer/SKILL.md` | Script → AI-generation shotlist. Tool-agnostic prompts (Sora 2 / Veo 3 / Runway / Pika / Kling), voice-over guidance, music, budget. |
 | `bin/transcribe` | yt-dlp → 16kHz WAV → whisper.cpp wrapper |
 | `setup.md` | Full install guide (macOS) |
 | `setup-wsl.md` | Windows guide (via WSL2) |
