@@ -8,6 +8,7 @@ Two **Claude Code skills** that find what's actually going viral in your niche t
 - **`hook-agent`** — writes the 1-3 second opener that `my-voice-writer` deliberately skips. Always outputs 3 hook variants `[HOOK A/B/C]` across different archetypes (number-drop, confession, meta-acknowledgment, anti-claim, list-twist, quiet declarative), one of which is in dry-Hinglish.
 - **`ai-visuals-writer`** — converts a finished script + hook into a complete AI-generation shotlist (Sora 2 / Veo 3 / Runway Gen-4 / Pika / Kling), with voice-over + music guidance and budget estimate. Replaces raw recordings for B-roll while keeping UI screens as real recordings.
 - **`hook-generator`** — more opinionated cousin of `hook-agent`: always 5 hooks, all Hinglish, fixed 5-pattern slate (aspirational, pain-point, exclusivity, time-or-money claim, curiosity-gap), with per-hook confidence scores 0-10 grounded in the latest scrape data.
+- **`dm-responder`** — drafts personalized IG DMs for commenters who hit your "Comment X" reel. One specific reference per opener (recent post / tool / language / city), 3-message sequence, banned phrases enforced. Includes a Python helper that batch-fetches commenter profiles via Apify.
 
 Built end-to-end with Claude Code in a single session. Costs ~$1/week in Apify credits. Local Whisper is free.
 
@@ -20,6 +21,7 @@ Built end-to-end with Claude Code in a single session. Costs ~$1/week in Apify c
 ~/.claude/skills/hook-agent/           ← writes the 1-3 sec opener, 3 variants
 ~/.claude/skills/hook-generator/       ← 5 hooks across 5 fixed patterns, scored
 ~/.claude/skills/ai-visuals-writer/    ← AI-generation shotlist + VO + music + budget
+~/.claude/skills/dm-responder/         ← personalized DMs for commenters (+ fetch helper)
 ~/.local/bin/transcribe                ← local Whisper wrapper
 ```
 
@@ -81,6 +83,8 @@ Free Apify tier gives $5/mo in credits — enough for a few full weekly runs.
 | `hook-agent/SKILL.md` | 1-3 sec hook writer — 3 variants per call, archetype-tagged, mixed English/Hinglish. Pairs with `my-voice-writer`. |
 | `hook-generator/SKILL.md` | 5-hook generator with fixed pattern slate (aspirational / pain / exclusivity / money / curiosity) + per-hook confidence scoring. All Hinglish. |
 | `ai-visuals-writer/SKILL.md` | Script → AI-generation shotlist. Tool-agnostic prompts (Sora 2 / Veo 3 / Runway / Pika / Kling), voice-over guidance, music, budget. |
+| `dm-responder/SKILL.md` | Personalized IG DM drafter for "Comment X" commenters. One specific reference per opener, 3-message sequence, banned-phrase enforcement. |
+| `dm-responder/fetch_commenters.py` | Batch profile-fetch helper via Apify. Pulls bio, recent posts, followers, language signal, niche tags. Outputs JSON. |
 | `bin/transcribe` | yt-dlp → 16kHz WAV → whisper.cpp wrapper |
 | `setup.md` | Full install guide (macOS) |
 | `setup-wsl.md` | Windows guide (via WSL2) |
