@@ -28,7 +28,7 @@ DIM         := \033[2m
 RESET       := \033[0m
 
 .DEFAULT_GOAL := help
-.PHONY: help reel scrape validate cluster hook script shotlist dms clean check-deps doctor
+.PHONY: help reel gui scrape validate cluster hook script shotlist dms clean check-deps doctor
 
 help:  ## Show this help
 	@printf "$(CYAN)Usage:$(RESET)\n"
@@ -58,6 +58,14 @@ reel: scrape validate cluster hook script shotlist  ## Full pre-shoot pipeline (
 	@printf "\n$(GREEN)✅ Reel package ready:$(RESET) $(PKG)\n"
 	@ls -1 $(PKG)/
 	@printf "\n$(CYAN)Next:$(RESET) review $(PKG)/script.md, then shoot/generate per $(PKG)/shotlist.md\n"
+
+gui:  ## Launch the Streamlit GUI (full pipeline, point-and-click)
+	@command -v streamlit >/dev/null 2>&1 || python3 -c "import streamlit" 2>/dev/null || { \
+		printf "$(YELLOW)Streamlit not installed.$(RESET) Run:\n"; \
+		printf "  python3 -m pip install --user -r gui/requirements.txt\n"; \
+		exit 1; }
+	@printf "$(CYAN)→ Launching GUI at http://localhost:8501$(RESET)\n"
+	@python3 -m streamlit run $(REPO)/gui/app.py
 
 # --- Step 1/6 : Apify scrape ---
 scrape: check-deps | $(PKG)  ## 1/6 — Apify scrape + process (IG + YT, ~5 min, ~$0.50)

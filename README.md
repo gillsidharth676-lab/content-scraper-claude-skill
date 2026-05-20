@@ -65,6 +65,17 @@ make dms HANDLES=commenters.txt                    # post-shoot DMs (skill 7)
 
 For LLM-driven targets (`hook`, `script`, `shotlist`, `dms`) the Makefile auto-uses `claude -p` (Claude Code's headless mode) if `claude` is on PATH; otherwise it prints copy-paste instructions to run inside a Claude Code session.
 
+## Graphical interface (`make gui`)
+
+Prefer point-and-click? The repo ships a Streamlit app covering the whole 7-step pipeline:
+
+```bash
+python3 -m pip install --user -r gui/requirements.txt   # one-time
+make gui                                                # opens http://localhost:8501
+```
+
+The GUI walks Setup → Scrape → Validate → Topics → Hooks → Script → Shotlist → DMs → Done. Every step has **Run / Regenerate / inline-Edit** controls, and a **Return to Edit** footer that jumps back to any earlier step without losing artifacts. State persists to the same `~/content-scraper/YYYY-MM-DD-reel-package/` directory the Makefile uses, so CLI and GUI are interchangeable mid-run.
+
 ## Sample output
 
 See [`examples/example-output.csv`](examples/example-output.csv) for a sanitized snapshot. Columns:
@@ -101,7 +112,9 @@ Free Apify tier gives $5/mo in credits — enough for a few full weekly runs.
 | `ai-visuals-writer/SKILL.md` | Script → AI-generation shotlist. Tool-agnostic prompts (Sora 2 / Veo 3 / Runway / Pika / Kling), voice-over guidance, music, budget. |
 | `dm-responder/SKILL.md` | Personalized IG DM drafter for "Comment X" commenters. One specific reference per opener, 3-message sequence, banned-phrase enforcement. |
 | `dm-responder/fetch_commenters.py` | Batch profile-fetch helper via Apify. Pulls bio, recent posts, followers, language signal, niche tags. Outputs JSON. |
-| `Makefile` | One-command orchestrator. `make reel` chains skills 1–6; `make dms HANDLES=...` runs skill 7. |
+| `Makefile` | One-command orchestrator. `make reel` chains skills 1–6; `make dms HANDLES=...` runs skill 7; `make gui` launches the GUI. |
+| `gui/app.py` | Streamlit GUI for the full pipeline — 9 steps, Run/Edit/Regenerate per step, Return-to-Edit navigation. |
+| `gui/requirements.txt` | GUI dependency (`streamlit`). |
 | `bin/run-scrape.sh` | Apify IG + YT scrape orchestrator (parallel REST calls, polling, dataset fetch, process). Called by `make scrape`. |
 | `bin/cluster-topics.py` | Topic clustering of latest trends.json by view performance. Called by `make cluster`. |
 | `bin/transcribe` | yt-dlp → 16kHz WAV → whisper.cpp wrapper |

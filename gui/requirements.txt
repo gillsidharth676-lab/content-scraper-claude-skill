@@ -1,0 +1,3 @@
+# GUI dependency. Install with:
+#   python3 -m pip install --user -r gui/requirements.txt
+streamlit>=1.40
